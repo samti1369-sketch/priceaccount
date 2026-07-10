@@ -1,82 +1,371 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Dashboard ติดตามร่างบัญชีราคาประเมินที่ดิน</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-<style>
-:root{--blue:#075aa8;--blue2:#0b75d1;--light:#edf6ff;--bg:#f5f8fc;--line:#d9e7f6;--text:#102033;--muted:#63758b;--green:#22a06b;--yellow:#f2c94c;--red:#e5484d;--gray:#9aa6b2;--shadow:0 12px 30px rgba(16,32,51,.08)}
-*{box-sizing:border-box}body{margin:0;font-family:"Noto Sans Thai",sans-serif;background:var(--bg);color:var(--text)}.wrap{max-width:1500px;margin:auto;padding:18px}.hero{background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff}.hero .wrap{display:grid;grid-template-columns:1.5fr .8fr;gap:16px;align-items:center}.hero h1{margin:0 0 8px;font-size:28px;line-height:1.25}.hero p{margin:0;color:#e8f4ff}.statusbox{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);border-radius:18px;padding:14px}.statusline{display:flex;justify-content:space-between;gap:12px;margin:4px 0}.legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;font-size:12px}.dot{width:12px;height:12px;border-radius:4px;display:inline-block;margin-right:5px;vertical-align:-1px;border:1px solid rgba(0,0,0,.08)}.filters{display:grid;grid-template-columns:1fr 1.25fr 1fr 1fr;gap:12px;margin:16px 0}.box,.panel{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}.box{padding:12px}.box label{display:block;color:var(--blue);font-size:13px;font-weight:800;margin-bottom:6px}select,input{width:100%;border:1px solid #c4d7ec;border-radius:12px;padding:10px 12px;font-family:inherit;font-size:14px;background:#fff;outline:0}select:focus,input:focus{border-color:var(--blue2);box-shadow:0 0 0 3px rgba(11,117,209,.12)}.alert{display:none;background:#fff7ed;border:1px solid #fed7aa;color:#7c2d12;border-radius:16px;padding:13px 16px;margin:14px 0;line-height:1.6}.alert b{display:block;color:#9a3412}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}.section{grid-column:1/-1;color:var(--blue);font-weight:800;margin:8px 2px 0}.card{background:linear-gradient(180deg,#fff,#f8fbff);border:1px solid var(--line);border-left:5px solid var(--blue2);border-radius:16px;padding:14px;min-height:94px}.card small{display:block;color:var(--muted);margin-bottom:6px}.card strong{font-size:25px;color:#0d3765}.card .sub{font-size:12px;color:var(--muted);margin-top:4px}.grid{display:grid;grid-template-columns:1.12fr .88fr;gap:16px}.panel{padding:16px}.head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}.panel h2{margin:0;color:#073d7a;font-size:18px}.tabs,.sorts,.tools{display:flex;gap:8px;flex-wrap:wrap}.btn{border:1px solid #c4d7ec;background:#fff;color:#073d7a;border-radius:999px;padding:8px 13px;font-family:inherit;font-weight:800;cursor:pointer}.btn.active{background:var(--blue);color:#fff;border-color:var(--blue)}#map{height:570px;border-radius:16px;border:1px solid var(--line);background:var(--light);overflow:hidden}.leaflet-container{background:var(--light)}.leaflet-tooltip{font-family:"Noto Sans Thai";font-weight:800}.leaflet-popup-content{font-family:"Noto Sans Thai";min-width:260px}.pop-title{font-weight:800;color:var(--blue);font-size:16px;margin-bottom:6px}.pop-row{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid #edf2f7;padding:3px 0}.chartbox{height:570px}.note{font-size:12px;color:var(--muted);margin-top:8px}.tablepanel{margin-top:16px}.tabletools{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}#searchBox{max-width:390px}.tablewrap{overflow:auto;max-height:640px;border:1px solid var(--line);border-radius:16px}table{width:100%;min-width:1450px;border-collapse:separate;border-spacing:0;background:#fff}th,td{padding:10px 12px;border-bottom:1px solid #edf2f7;text-align:right;white-space:nowrap;font-size:13px}th{position:sticky;top:0;background:#eaf4ff;color:#073d7a;z-index:3;cursor:pointer;font-weight:800}td:first-child,td:nth-child(2),th:first-child,th:nth-child(2){text-align:left}tbody tr:hover{background:#f1f7ff;cursor:pointer}.pill{display:inline-block;min-width:84px;border-radius:999px;padding:4px 10px;color:#fff;font-size:12px;font-weight:800;text-align:center}.pill.mid{color:#4d3900}.empty{text-align:center;color:var(--muted);padding:28px!important}@media(max-width:1100px){.hero .wrap,.grid{grid-template-columns:1fr}.filters{grid-template-columns:1fr 1fr}.cards{grid-template-columns:repeat(2,1fr)}}@media(max-width:720px){.wrap{padding:12px}.filters,.cards{grid-template-columns:1fr}.hero h1{font-size:22px}#map,.chartbox{height:430px}.tabletools{display:block}#searchBox{max-width:100%;margin-top:10px}}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Executive Dashboard Draft_LandPrice</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    :root{
+      --bg:#f5f7fb; --panel:#ffffff; --ink:#172033; --muted:#667085; --line:#e6eaf2;
+      --blue:#1d4ed8; --blue2:#eaf1ff; --green:#16a34a; --orange:#f59e0b; --red:#dc2626; --gray:#9ca3af;
+      --shadow:0 14px 40px rgba(15,23,42,.08); --radius:22px;
+    }
+    *{box-sizing:border-box} body{margin:0;font-family:'Noto Sans Thai',system-ui,sans-serif;background:radial-gradient(circle at top left,#eaf1ff 0,#f5f7fb 32%,#f7fafc 100%);color:var(--ink)}
+    .wrap{max-width:1500px;margin:auto;padding:28px}.hero{display:flex;gap:20px;justify-content:space-between;align-items:flex-end;margin-bottom:18px}.eyebrow{color:var(--blue);font-weight:800;letter-spacing:.3px}.hero h1{font-size:clamp(26px,3vw,42px);line-height:1.18;margin:6px 0 8px}.hero p{margin:0;color:var(--muted);font-size:15px}.badge{display:inline-flex;gap:8px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:999px;padding:10px 14px;box-shadow:var(--shadow);white-space:nowrap}.dot{width:10px;height:10px;border-radius:50%;background:var(--green)}
+    .filters,.cards,.grid,.charts{display:grid;gap:16px}.filters{grid-template-columns:repeat(4,minmax(160px,1fr));background:rgba(255,255,255,.8);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-bottom:16px}.field label{display:block;font-weight:700;font-size:13px;color:#344054;margin-bottom:6px}.field select,.field input{width:100%;height:44px;border:1px solid var(--line);border-radius:14px;padding:0 12px;background:#fff;font-family:inherit;color:var(--ink)}button{height:44px;border:0;border-radius:14px;background:var(--blue);color:white;font-weight:800;cursor:pointer;box-shadow:0 8px 18px rgba(29,78,216,.22)}
+    .cards{grid-template-columns:repeat(4,minmax(150px,1fr));margin-bottom:0}
+    .card-groups{display:grid;gap:16px;margin-bottom:16px}
+    .card-group{background:rgba(255,255,255,.78);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px}
+    .group-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding:0 2px}
+    .group-head h2{margin:2px 0 0;font-size:18px;color:#173b7a}
+    .group-kicker{font-size:10px;font-weight:800;letter-spacing:1.4px;color:var(--blue)}
+    .card .formula{font-size:11px;color:#667085;margin-top:7px;line-height:1.45}
+    .card.highlight{border-color:#bfdbfe;background:linear-gradient(180deg,#ffffff 0%,#f4f8ff 100%)}
+.card,.panel{background:rgba(255,255,255,.92);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}.card{padding:16px}.card .label{font-size:12px;color:var(--muted);font-weight:700}.card .num{font-size:clamp(20px,2vw,30px);font-weight:800;margin-top:6px}.card .sub{font-size:12px;color:var(--muted);margin-top:2px}
+    .grid{grid-template-columns:1.25fr .75fr;margin-bottom:16px}.panel{padding:18px;min-width:0}.panel h2{font-size:18px;margin:0 0 12px}.legend{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}.pill{border:1px solid var(--line);border-radius:999px;background:#fff;padding:7px 11px;font-size:12px;font-weight:800;cursor:pointer}.pill span{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:-1px}.pill.active{outline:3px solid #dbeafe}#map{height:560px;border-radius:18px;overflow:hidden;border:1px solid var(--line);background:#dbeafe}.charts{grid-template-columns:1fr 1fr}.chartbox{height:310px}.mini{height:240px}.table-tools{display:flex;gap:12px;justify-content:space-between;align-items:center;margin-bottom:10px}.search{max-width:360px}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:18px}table{width:100%;border-collapse:collapse;background:#fff;min-width:980px}th,td{padding:12px 14px;border-bottom:1px solid var(--line);font-size:13px;text-align:left;white-space:nowrap}th{position:sticky;top:0;background:#f8fafc;z-index:1;font-weight:800;color:#344054;cursor:pointer}th::after{content:' ⇅';color:#98a2b3;font-size:11px}td.num{text-align:right;font-variant-numeric:tabular-nums}.status{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:5px 10px;font-weight:800;font-size:12px}.status::before{content:'';width:8px;height:8px;border-radius:50%}.high{background:#ecfdf3;color:#067647}.high::before{background:var(--green)}.mid{background:#fffaeb;color:#b54708}.mid::before{background:var(--orange)}.low{background:#fef3f2;color:#b42318}.low::before{background:var(--red)}.zero{background:#f2f4f7;color:#475467}.zero::before{background:var(--gray)}.foot{color:var(--muted);font-size:12px;margin-top:12px}.leaflet-tooltip{font-family:'Noto Sans Thai',sans-serif;border:0;border-radius:14px;box-shadow:var(--shadow);padding:10px 12px}.loading{padding:20px;color:var(--muted)}
+    @media(max-width:1100px){.cards{grid-template-columns:repeat(3,1fr)}.grid,.charts{grid-template-columns:1fr}.filters{grid-template-columns:repeat(2,1fr)}#map{height:460px}}@media(max-width:680px){.wrap{padding:18px}.hero{display:block}.badge{margin-top:14px}.cards,.filters{grid-template-columns:1fr}.chartbox{height:260px}}
+  </style>
 </head>
 <body>
-<header class="hero"><div class="wrap"><div><h1>Dashboard ติดตามการคำนวณและการจัดทำร่างบัญชีราคาประเมินที่ดิน</h1><p>แผนที่ระบายสีขอบเขตจังหวัด พร้อมตัวกรอง จังหวัด / สำนักงานที่ดิน / ระดับการอนุมัติ / ระดับการจัดทำร่างบัญชี</p></div><div class="statusbox"><div class="statusline"><span>สถานะข้อมูล</span><b id="loadStatus">กำลังโหลด...</b></div><div class="statusline"><span>จำนวนรายการ</span><b id="rowCount">-</b></div><div class="statusline"><span>อัปเดตล่าสุด</span><b id="lastUpdate">-</b></div><div class="legend"><span><i class="dot" style="background:var(--green)"></i>สูง ≥ 80%</span><span><i class="dot" style="background:var(--yellow)"></i>กลาง 50–79%</span><span><i class="dot" style="background:var(--red)"></i>ต่ำ 1–49%</span><span><i class="dot" style="background:var(--gray)"></i>ยังไม่ดำเนินการ</span></div></div></div></header>
-<main class="wrap">
-<div id="alert" class="alert"></div>
-<section class="filters"><div class="box"><label>จังหวัด</label><select id="provinceFilter"><option value="">ทุกจังหวัด</option></select></div><div class="box"><label>สำนักงานที่ดิน</label><select id="officeFilter"><option value="">ทุกสำนักงานที่ดิน</option></select></div><div class="box"><label>พื้นที่ที่ดำเนินการอนุมัติราคาแปลงที่ดิน</label><select id="approvalFilter"><option value="">ทุกระดับ</option><option>สูง</option><option>กลาง</option><option>ต่ำ</option><option>ยังไม่ดำเนินการ</option></select></div><div class="box"><label>พื้นที่ที่ดำเนินการจัดทำร่างบัญชี</label><select id="draftFilter"><option value="">ทุกระดับ</option><option>สูง</option><option>กลาง</option><option>ต่ำ</option><option>ยังไม่ดำเนินการ</option></select></div></section>
-<section id="cards" class="cards"></section>
-<section class="grid"><div class="panel"><div class="head"><h2>แผนที่สถานะรายจังหวัด</h2><div class="tabs"><button class="btn active" data-mode="approval">อนุมัติราคา</button><button class="btn" data-mode="draft">ร่างบัญชี</button></div></div><div id="map"></div><div class="note">สีแสดงสถานะบนขอบเขตจังหวัดโดยตรง ไม่ใช่ Bubble / Hover เพื่อดูรายละเอียด / Click เพื่อกรองทั้ง Dashboard</div></div><div class="panel"><h2>กราฟเส้นติดตามผลการจัดทำร่างบัญชี</h2><div class="sorts" style="margin:12px 0"><button id="sortName" class="btn active">Sort ชื่อจังหวัด</button><button id="sortPct" class="btn">Sort % ดำเนินงาน</button></div><div class="chartbox"><canvas id="chart"></canvas></div></div></section>
-<section class="panel tablepanel"><div class="tabletools"><h2>ตารางสรุปข้อมูล</h2><div class="tools"><input id="searchBox" placeholder="ค้นหาจังหวัดหรือสำนักงานที่ดิน"><button id="clearBtn" class="btn">ล้างตัวกรอง</button></div></div><div class="tablewrap"><table id="tbl"><thead></thead><tbody></tbody></table></div></section>
-</main>
+<div class="wrap">
+  <section class="hero">
+    <div><div class="eyebrow">Executive Dashboard Draft_LandPrice</div><h1>รายงานการดำเนินการจัดทำร่างบัญชีราคาประเมินที่ดิน</h1><p>ความก้าวหน้าการจัดทำร่างบัญชีราคาประเมินที่ดินผ่านระบบ รายจังหวัด · 77 จังหวัด</p></div>
+    <div class="badge"><span class="dot"></span><span id="updatedAt">กำลังเชื่อมต่อข้อมูล Google Sheet</span></div>
+  </section>
+
+  <section class="filters">
+    <div class="field"><label>จังหวัด</label><select id="provinceFilter"><option value="">ทุกจังหวัด</option></select></div>
+    <div class="field"><label>ภูมิภาค</label><select id="regionFilter"><option value="">ทุกภูมิภาค</option></select></div>
+    <div class="field"><label>สถานะ</label><select id="statusFilter"><option value="">ทุกสถานะ</option><option>สูง</option><option>ปานกลาง</option><option>ต่ำ</option><option>ยังไม่เริ่ม</option></select></div>
+    <div class="field"><label>&nbsp;</label><button id="resetBtn">ล้างตัวกรอง</button></div>
+  </section>
+
+  <section class="card-groups" id="cards">
+    <div class="card-group">
+      <div class="group-head">
+        <div>
+          <div class="group-kicker">LAND UNIT</div>
+          <h2>หมวดหน่วยที่ดิน</h2>
+        </div>
+      </div>
+      <div class="cards" id="unitCards"></div>
+    </div>
+
+    <div class="card-group">
+      <div class="group-head">
+        <div>
+          <div class="group-kicker">LAND PARCEL</div>
+          <h2>หมวดแปลงที่ดิน</h2>
+        </div>
+      </div>
+      <div class="cards" id="parcelCards"></div>
+    </div>
+  </section>
+
+  <section class="grid">
+    <div class="panel"><h2>แผนที่สถานะความก้าวหน้ารายจังหวัด</h2><div class="legend" id="legend"></div><div id="map"></div><div class="foot">คลิกจังหวัดบนแผนที่เพื่อกรองข้อมูล / เลือกสถานะในแถบสีเพื่อกรองตามสถานะ</div></div>
+    <div class="panel"><h2>ภาพรวมสถานะและภูมิภาค</h2><div class="chartbox mini"><canvas id="statusChart"></canvas></div><div class="chartbox mini"><canvas id="regionChart"></canvas></div></div>
+  </section>
+
+  <section class="charts">
+    <div class="panel"><h2>10 อันดับจังหวัดที่ทำได้ดีที่สุด</h2><div class="chartbox"><canvas id="topChart"></canvas></div></div>
+    <div class="panel"><h2>10 อันดับจังหวัดที่ต้องเร่งรัด <span style="font-size:12px;color:var(--muted)">(ไม่รวม 0%)</span></h2><div class="chartbox"><canvas id="needChart"></canvas></div></div>
+  </section>
+
+  <section class="panel" style="margin-top:16px"><div class="table-tools"><h2>ตารางรายละเอียดจังหวัดทั้ง 77 จังหวัด</h2><div class="field search"><input id="searchBox" placeholder="ค้นหาจังหวัด / ภูมิภาค / สถานะ"></div></div><div class="table-wrap"><table id="dataTable"><thead></thead><tbody></tbody></table></div><div class="foot">กดหัวคอลัมน์เพื่อเรียงจากมากไปน้อยหรือจากน้อยไปมาก</div></section>
+</div>
+
 <script>
-'use strict';
-const SHEET_ID='1iXez6k90QeyoXsWsujrWxwBV_6Yuc8_9Z-okH6on0fk', GID='0';
-const GVIZ_URL=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?gid=${GID}&headers=1&tq=${encodeURIComponent('select *')}`;
-const THAI_GEO_URL='https://cdn.amcharts.com/lib/5/geodata/json/thailandLow.json';
-const nf=new Intl.NumberFormat('th-TH'), pf=new Intl.NumberFormat('th-TH',{minimumFractionDigits:2,maximumFractionDigits:2});
-let raw=[], filtered=[], headers=[], col={}, provAgg=[], map, geoLayer, chart, mapMode='approval', chartSort='name', tableSort={key:null,dir:1};
-const $=id=>document.getElementById(id);
-const EN2TH={
-'Bangkok':'กรุงเทพมหานคร','Amnat Charoen':'อำนาจเจริญ','Ang Thong':'อ่างทอง','Bueng Kan':'บึงกาฬ','Buriram':'บุรีรัมย์','Chachoengsao':'ฉะเชิงเทรา','Chai Nat':'ชัยนาท','Chaiyaphum':'ชัยภูมิ','Chanthaburi':'จันทบุรี','Chiang Mai':'เชียงใหม่','Chiang Rai':'เชียงราย','Chon Buri':'ชลบุรี','Chumphon':'ชุมพร','Kalasin':'กาฬสินธุ์','Kamphaeng Phet':'กำแพงเพชร','Kanchanaburi':'กาญจนบุรี','Khon Kaen':'ขอนแก่น','Krabi':'กระบี่','Lampang':'ลำปาง','Lamphun':'ลำพูน','Loei':'เลย','Lop Buri':'ลพบุรี','Mae Hong Son':'แม่ฮ่องสอน','Maha Sarakham':'มหาสารคาม','Mukdahan':'มุกดาหาร','Nakhon Nayok':'นครนายก','Nakhon Pathom':'นครปฐม','Nakhon Phanom':'นครพนม','Nakhon Ratchasima':'นครราชสีมา','Nakhon Sawan':'นครสวรรค์','Nakhon Si Thammarat':'นครศรีธรรมราช','Nan':'น่าน','Narathiwat':'นราธิวาส','Nong Bua Lamphu':'หนองบัวลำภู','Nong Khai':'หนองคาย','Nonthaburi':'นนทบุรี','Pathum Thani':'ปทุมธานี','Pattani':'ปัตตานี','Phangnga':'พังงา','Phatthalung':'พัทลุง','Phayao':'พะเยา','Phetchabun':'เพชรบูรณ์','Phetchaburi':'เพชรบุรี','Phichit':'พิจิตร','Phitsanulok':'พิษณุโลก','Phra Nakhon Si Ayutthaya':'พระนครศรีอยุธยา','Phrae':'แพร่','Phuket':'ภูเก็ต','Prachin Buri':'ปราจีนบุรี','Prachuap Khiri Khan':'ประจวบคีรีขันธ์','Ranong':'ระนอง','Ratchaburi':'ราชบุรี','Rayong':'ระยอง','Roi Et':'ร้อยเอ็ด','Sa Kaeo':'สระแก้ว','Sakon Nakhon':'สกลนคร','Samut Prakan':'สมุทรปราการ','Samut Sakhon':'สมุทรสาคร','Samut Songkhram':'สมุทรสงคราม','Saraburi':'สระบุรี','Satun':'สตูล','Sing Buri':'สิงห์บุรี','Sisaket':'ศรีสะเกษ','Songkhla':'สงขลา','Sukhothai':'สุโขทัย','Suphan Buri':'สุพรรณบุรี','Surat Thani':'สุราษฎร์ธานี','Surin':'สุรินทร์','Tak':'ตาก','Trang':'ตรัง','Trat':'ตราด','Ubon Ratchathani':'อุบลราชธานี','Udon Thani':'อุดรธานี','Uthai Thani':'อุทัยธานี','Uttaradit':'อุตรดิตถ์','Yala':'ยะลา','Yasothon':'ยโสธร'};
-function alertBox(t,m){$('alert').style.display='block';$('alert').innerHTML=`<b>${t}</b>${m}`}
-function clearAlert(){$('alert').style.display='none';$('alert').innerHTML=''}
-function clean(s){return String(s??'').replace(/\s+/g,'').replace(/[()（）]/g,'').trim()}
-function normProvince(s){return clean(s).replace(/^จังหวัด/,'').replace('กรุงเทพฯ','กรุงเทพมหานคร').replace('กทม.','กรุงเทพมหานคร')}
-function num(v){if(v==null||v==='')return 0;let s=String(v).replace(/,/g,'').replace(/%/g,'').trim();let n=parseFloat(s);return Number.isFinite(n)?n:0}
-function pct(v){let n=num(v);return Math.abs(n)<=1&&String(v).includes('.')?n*100:n}
-function level(p){p=num(p); if(p<=0)return 'ยังไม่ดำเนินการ'; if(p>=80)return 'สูง'; if(p>=50)return 'กลาง'; return 'ต่ำ'}
-function color(l){return l==='สูง'?'#22a06b':l==='กลาง'?'#f2c94c':l==='ต่ำ'?'#e5484d':'#9aa6b2'}
-function pill(l){return l==='กลาง'?'mid':''}
-function findCol(patterns, fallbackIndex){for(const p of patterns){let found=headers.find(h=>clean(h).includes(clean(p))); if(found)return found} return headers[fallbackIndex]||null}
-function detectColumns(){
- col={province:findCol(['จังหวัด'],0), office:findCol(['สำนักงานที่ดิน','สนง.ที่ดิน'],1), market:findCol(['กลุ่มข้อมูลราคาตลาด'],2), unitAll:findCol(['จำนวนหน่วยที่ดินทั้งหมด','หน่วยที่ดินทั้งหมด'],3), unitT3:findCol(['จำนวนหน่วยที่ดินตาราง3','ตาราง3'],4), unitDiff:findCol(['ความแตกต่างหน่วยที่ดินทั้งหมดกับตาราง3'],5), notCalc:findCol(['จำนวนแปลงที่ยังไม่ได้คำนวณราคา','ยังไม่ได้คำนวณ'],6), parcelAll:findCol(['จำนวนแปลงทั้งหมด','แปลงทั้งหมด'],7), cannot:findCol(['จำนวนแปลงที่คำนวณราคาไม่ได้','คำนวณราคาไม่ได้'],8), reject:findCol(['จำนวนแปลงไม่ผ่านการพิจารณา','ไม่ผ่านการพิจารณา'],9), pending:findCol(['จำนวนแปลงที่รออนุมัติ','รออนุมัติ'],10), approved:findCol(['จำนวนแปลงที่อนุมัติราคาแล้ว','แปลงที่อนุมัติราคาแล้ว','อนุมัติราคาแล้ว'],11), draft:findCol(['จำนวนแปลงที่จัดทำร่างบัญชีแล้ว','จัดทำร่างบัญชีแล้ว','ร่างบัญชีแล้ว'],12), approvalDiff:findCol(['ความแตกต่างแปลงทั้งหมดกับแปลงที่อนุมัติแล้ว'],13), draftDiff:findCol(['ความแตกต่างของแปลงอนุมัติกับแปลงที่จัดทำร่างบัญชี'],14)};
- if(!col.province||!col.office) alertBox('ตรวจพบหัวตารางไม่ครบ','ไม่พบคอลัมน์จังหวัดหรือสำนักงานที่ดิน กรุณาตรวจหัวตารางใน Google Sheet');
+const SHEET_ID = '11hWDoMcLl-tG6cJfxDQ6WX7wc3V1MhPuTh9m_Dh9F-o';
+const GID = '0';
+const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=${GID}`;
+const COLORS = { 'สูง':'#16a34a', 'ปานกลาง':'#f59e0b', 'ต่ำ':'#dc2626', 'ยังไม่เริ่ม':'#9ca3af' };
+const STATUS_CLASS = { 'สูง':'high', 'ปานกลาง':'mid', 'ต่ำ':'low', 'ยังไม่เริ่ม':'zero' };
+
+// URL ขอบเขตจังหวัดประเทศไทยแบบ GeoJSON
+// ใช้หลายแหล่งสำรอง เพื่อให้เปิดบน GitHub Pages ได้ง่ายขึ้น
+const GEOJSON_URLS = [
+  'https://raw.githubusercontent.com/apisit/thailand.json/master/thailand.json',
+  'https://raw.githubusercontent.com/robrotheram/ThaiGeoJSON/master/thailand-provinces.geojson',
+  'https://raw.githubusercontent.com/thaipublica/thailand-map/master/thailand.json',
+  'https://raw.githubusercontent.com/codeforamerica/click_that_hood/master/public/data/thailand.geojson'
+];
+
+// ใช้สำหรับเทียบชื่อจังหวัดจากไฟล์ GeoJSON หลายรูปแบบ
+const PROVINCE_ALIASES = {
+  'Bangkok Metropolis':'กรุงเทพมหานคร','Bangkok':'กรุงเทพมหานคร','Krung Thep Maha Nakhon':'กรุงเทพมหานคร',
+  'Amnat Charoen':'อำนาจเจริญ','Ang Thong':'อ่างทอง','Bueng Kan':'บึงกาฬ','Buri Ram':'บุรีรัมย์',
+  'Chachoengsao':'ฉะเชิงเทรา','Chai Nat':'ชัยนาท','Chaiyaphum':'ชัยภูมิ','Chanthaburi':'จันทบุรี',
+  'Chiang Mai':'เชียงใหม่','Chiang Rai':'เชียงราย','Chon Buri':'ชลบุรี','Chumphon':'ชุมพร',
+  'Kalasin':'กาฬสินธุ์','Kamphaeng Phet':'กำแพงเพชร','Kanchanaburi':'กาญจนบุรี','Khon Kaen':'ขอนแก่น',
+  'Krabi':'กระบี่','Lampang':'ลำปาง','Lamphun':'ลำพูน','Loei':'เลย','Lop Buri':'ลพบุรี',
+  'Mae Hong Son':'แม่ฮ่องสอน','Maha Sarakham':'มหาสารคาม','Mukdahan':'มุกดาหาร','Nakhon Nayok':'นครนายก',
+  'Nakhon Pathom':'นครปฐม','Nakhon Phanom':'นครพนม','Nakhon Ratchasima':'นครราชสีมา',
+  'Nakhon Sawan':'นครสวรรค์','Nakhon Si Thammarat':'นครศรีธรรมราช','Nan':'น่าน','Narathiwat':'นราธิวาส',
+  'Nong Bua Lam Phu':'หนองบัวลำภู','Nong Khai':'หนองคาย','Nonthaburi':'นนทบุรี','Pathum Thani':'ปทุมธานี',
+  'Pattani':'ปัตตานี','Phangnga':'พังงา','Phang Nga':'พังงา','Phatthalung':'พัทลุง','Phayao':'พะเยา',
+  'Phetchabun':'เพชรบูรณ์','Phetchaburi':'เพชรบุรี','Phichit':'พิจิตร','Phitsanulok':'พิษณุโลก',
+  'Phra Nakhon Si Ayutthaya':'พระนครศรีอยุธยา','Phrae':'แพร่','Phuket':'ภูเก็ต','Prachin Buri':'ปราจีนบุรี',
+  'Prachuap Khiri Khan':'ประจวบคีรีขันธ์','Ranong':'ระนอง','Ratchaburi':'ราชบุรี','Rayong':'ระยอง',
+  'Roi Et':'ร้อยเอ็ด','Sa Kaeo':'สระแก้ว','Sakon Nakhon':'สกลนคร','Samut Prakan':'สมุทรปราการ',
+  'Samut Sakhon':'สมุทรสาคร','Samut Songkhram':'สมุทรสงคราม','Sara Buri':'สระบุรี','Saraburi':'สระบุรี',
+  'Satun':'สตูล','Sing Buri':'สิงห์บุรี','Si Sa Ket':'ศรีสะเกษ','Sisaket':'ศรีสะเกษ','Songkhla':'สงขลา',
+  'Sukhothai':'สุโขทัย','Suphan Buri':'สุพรรณบุรี','Surat Thani':'สุราษฎร์ธานี','Surin':'สุรินทร์',
+  'Tak':'ตาก','Trang':'ตรัง','Trat':'ตราด','Ubon Ratchathani':'อุบลราชธานี','Udon Thani':'อุดรธานี',
+  'Uthai Thani':'อุทัยธานี','Uttaradit':'อุตรดิตถ์','Yala':'ยะลา','Yasothon':'ยโสธร'
+};
+
+let provinceGeoJson = null;
+let geoJsonLayer = null;
+let rawData=[], filtered=[], sortKey='progress', sortDir='desc', charts={}, map;
+function clean(s){ return String(s||'').replace(/\s+/g,' ').trim(); }
+function num(v){ if(v===null||v===undefined||v==='') return 0; let s=String(v).replace(/,/g,'').replace(/%/g,'').trim(); return parseFloat(s)||0; }
+function pick(row, names){ const keys=Object.keys(row); for(const n of names){ const k=keys.find(x=>clean(x)===n || clean(x).includes(n)); if(k) return row[k]; } return ''; }
+function statusOf(p){ if(p>=80) return 'สูง'; if(p>=50) return 'ปานกลาง'; if(p>=1) return 'ต่ำ'; return 'ยังไม่เริ่ม'; }
+function fmt(n){ return Math.round(num(n)).toLocaleString('th-TH'); } function pct(n){ return (num(n)).toLocaleString('th-TH',{minimumFractionDigits:2,maximumFractionDigits:2})+'%'; }
+function normalizeRow(row){
+  const province = clean(pick(row,['จังหวัด']));
+  const region = clean(pick(row,['ภูมิภาค']));
+
+  // หมวดหน่วยที่ดิน
+  const unitTotal = num(pick(row,[
+    'จำนวนหน่วยที่ดินทั้งหมด','หน่วยที่ดินทั้งหมด','จำนวนหน่วยทั้งหมด'
+  ]));
+  const marketGroup = num(pick(row,[
+    'กลุ่มข้อมูลราคาตลาด','จำนวนกลุ่มข้อมูลราคาตลาด','ข้อมูลราคาตลาด'
+  ]));
+  const unitTable3 = num(pick(row,[
+    'หน่วยที่ดินตาราง 3','จำนวนหน่วยที่ดินตาราง 3','หน่วยที่ดินในตาราง 3',
+    'จำนวนหน่วยที่ดินในตารางบัญชี','หน่วยที่ดินตารางบัญชี'
+  ]));
+  const unitTablePct = unitTotal > 0 ? (unitTable3 / unitTotal) * 100 : 0;
+
+  // หมวดแปลงที่ดิน
+  const total = num(pick(row,['จำนวนแปลงทั้งหมด']));
+  const approved = num(pick(row,[
+    'จำนวนแปลงที่อนุมัติทำร่างบัญชี','จำนวนแปลงที่อนุมัติราคาแล้ว',
+    'จำนวนแปลงที่อนุมัติ','แปลงที่อนุมัติแล้ว'
+  ]));
+  const approvedPct = num(pick(row,[
+    '% แปลงที่อนุมัติจัดทำร่างบัญชี','% แปลงที่อนุมัติ',
+    'ร้อยละแปลงที่อนุมัติ'
+  ]));
+  const drafted = num(pick(row,[
+    'จำนวนแปลงที่จัดทำร่างบัญชี','จำนวนแปลงที่จัดทำร่างบัญชีแล้ว',
+    'แปลงจัดทำร่างบัญชีแล้ว'
+  ]));
+  // คำนวณใหม่: แปลงจัดทำร่างบัญชีแล้ว ÷ จำนวนแปลงทั้งหมด × 100
+  const progress = total > 0 ? (drafted / total) * 100 : 0;
+
+  return {
+    province,region,
+    unitTotal,marketGroup,unitTable3,unitTablePct,
+    total,approved,approvedPct,drafted,progress,
+    status:statusOf(progress)
+  };
 }
-function prepareRow(r){
- let all=num(r[col.parcelAll]), approved=num(r[col.approved]), draft=num(r[col.draft]);
- let ap = col.approvalDiff ? 100-pct(r[col.approvalDiff]) : (all?approved/all*100:0);
- let dp = col.draftDiff ? 100-pct(r[col.draftDiff]) : (approved?draft/approved*100:(all?draft/all*100:0));
- ap=Math.max(0,Math.min(100,ap)); dp=Math.max(0,Math.min(100,dp));
- r._province=String(r[col.province]||'').trim(); r._office=String(r[col.office]||'').trim(); r._approvalPct=ap; r._draftPct=dp; r._approvalLevel=level(ap); r._draftLevel=level(dp); return r;
+function applyFilters(){ const r=regionFilter.value, s=statusFilter.value, p=provinceFilter.value, q=clean(searchBox.value).toLowerCase(); filtered=rawData.filter(d=>(!r||d.region===r)&&(!s||d.status===s)&&(!p||d.province===p)&&(!q||`${d.province} ${d.region} ${d.status}`.toLowerCase().includes(q))); renderAll(); }
+function initFilters(){ [...new Set(rawData.map(d=>d.region).filter(Boolean))].sort().forEach(v=>regionFilter.add(new Option(v,v))); rawData.map(d=>d.province).sort((a,b)=>a.localeCompare(b,'th')).forEach(v=>provinceFilter.add(new Option(v,v))); }
+function renderCards(){
+  const count = filtered.length;
+
+  // รวมยอดตามข้อมูลที่อยู่ภายใต้ตัวกรองปัจจุบัน
+  const unitTotal = filtered.reduce((a,b)=>a+b.unitTotal,0);
+  const marketGroup = filtered.reduce((a,b)=>a+b.marketGroup,0);
+  const unitTable3 = filtered.reduce((a,b)=>a+b.unitTable3,0);
+  const unitTablePct = unitTotal > 0 ? (unitTable3 / unitTotal) * 100 : 0;
+
+  const total = filtered.reduce((a,b)=>a+b.total,0);
+  const approved = filtered.reduce((a,b)=>a+b.approved,0);
+  const drafted = filtered.reduce((a,b)=>a+b.drafted,0);
+  const approvedPct = total > 0 ? (approved / total) * 100 : 0;
+  const draftStatusPct = total > 0 ? (drafted / total) * 100 : 0;
+  const zero = filtered.filter(d=>d.status==='ยังไม่เริ่ม').length;
+
+  const unitItems = [
+    ['หน่วยที่ดินทั้งหมด',fmt(unitTotal),'หน่วยที่ดิน',''],
+    ['กลุ่มข้อมูลราคาตลาด',fmt(marketGroup),'กลุ่ม',''],
+    ['หน่วยที่ดินตาราง 3',fmt(unitTable3),'หน่วยที่ดิน',''],
+    ['ร้อยละหน่วยที่ดินในตารางบัญชีฯ',pct(unitTablePct),'เทียบหน่วยที่ดินทั้งหมด',
+      'หน่วยที่ดินตาราง 3 ÷ หน่วยที่ดินทั้งหมด × 100']
+  ];
+
+  // คง Card อื่นเดิมไว้ และเปลี่ยนเฉพาะสถานะร่างบัญชีเป็นค่าคำนวณ
+  const parcelItems = [
+    ['จำนวนจังหวัด',fmt(count),'พื้นที่',''],
+    ['จำนวนแปลงทั้งหมด',fmt(total),'โฉนดที่ดิน และ น.ส.๓ก.',''],
+    ['จำนวนแปลงที่อนุมัติทำร่างบัญชี',fmt(approved),'แปลง',''],
+    ['% แปลงที่อนุมัติจัดทำร่างบัญชี',pct(approvedPct),'เทียบจำนวนแปลงทั้งหมด',
+      'จำนวนแปลงที่อนุมัติแล้ว ÷ จำนวนแปลงทั้งหมด × 100'],
+    ['จำนวนแปลงที่จัดทำร่างบัญชี',fmt(drafted),'แปลง',''],
+    ['สถานะร่างบัญชี',pct(draftStatusPct),'ความก้าวหน้ารวมของพื้นที่ที่แสดง',
+      'แปลงจัดทำร่างบัญชีแล้ว ÷ จำนวนแปลงทั้งหมด × 100'],
+    ['จังหวัดที่ยังไม่เริ่ม',fmt(zero),'จังหวัด','']
+  ];
+
+  const cardHtml = (x,highlight=false)=>`
+    <div class="card ${highlight?'highlight':''}">
+      <div class="label">${x[0]}</div>
+      <div class="num">${x[1]}</div>
+      <div class="sub">${x[2]}</div>
+      ${x[3]?`<div class="formula">${x[3]}</div>`:''}
+    </div>`;
+
+  unitCards.innerHTML = unitItems.map((x,i)=>cardHtml(x,i===3)).join('');
+  parcelCards.innerHTML = parcelItems.map((x,i)=>cardHtml(x,i===5)).join('');
 }
-function sumRows(rows){let s={_province:'ภาพรวม',_office:`${rows.length} รายการ`};headers.forEach(h=>s[h]=0); rows.forEach(r=>headers.forEach(h=>{if(h!==col.province&&h!==col.office)s[h]+=num(r[h])})); let all=num(s[col.parcelAll]), approved=num(s[col.approved]), draft=num(s[col.draft]); s._approvalPct=all?approved/all*100:0; s._draftPct=approved?draft/approved*100:(all?draft/all*100:0); s._approvalPct=Math.max(0,Math.min(100,s._approvalPct)); s._draftPct=Math.max(0,Math.min(100,s._draftPct)); s._approvalLevel=level(s._approvalPct); s._draftLevel=level(s._draftPct); return s}
-function aggregate(rows){let m={}; rows.forEach(r=>{if(r._province)(m[r._province]??=[]).push(r)}); return Object.entries(m).map(([p,rs])=>{let s=sumRows(rs); s._province=p; s._office=`${rs.length} สำนักงาน`; return s})}
-function parseGviz(text){let json=JSON.parse(text.substring(text.indexOf('{'),text.lastIndexOf('}')+1)); let cols=json.table.cols.map((c,i)=>c.label||`คอลัมน์${i+1}`); let rows=json.table.rows.map(row=>{let o={}; row.c.forEach((cell,i)=>o[cols[i]]=cell?(cell.f??cell.v??''):''); return o}); return {cols,rows}}
-async function loadSheet(){let res=await fetch(GVIZ_URL); if(!res.ok) throw new Error('โหลด Google Sheet ไม่สำเร็จ '+res.status); let text=await res.text(); let parsed=parseGviz(text); headers=parsed.cols.filter(Boolean); raw=parsed.rows.filter(r=>Object.values(r).some(v=>String(v).trim()!=='')); detectColumns(); raw=raw.map(prepareRow).filter(r=>r._province); $('lastUpdate').textContent=new Date().toLocaleString('th-TH'); $('loadStatus').textContent='โหลดสำเร็จ';}
-function fillFilters(){let ps=[...new Set(raw.map(r=>r._province))].sort((a,b)=>a.localeCompare(b,'th')); $('provinceFilter').innerHTML='<option value="">ทุกจังหวัด</option>'+ps.map(p=>`<option value="${p}">${p}</option>`).join(''); updateOfficeOptions()}
-function updateOfficeOptions(){let p=$('provinceFilter').value, old=$('officeFilter').value;let os=[...new Set(raw.filter(r=>!p||r._province===p).map(r=>r._office).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'th')); $('officeFilter').innerHTML='<option value="">ทุกสำนักงานที่ดิน</option>'+os.map(o=>`<option value="${o}">${o}</option>`).join(''); if(os.includes(old))$('officeFilter').value=old}
-function apply(){let p=$('provinceFilter').value,o=$('officeFilter').value,a=$('approvalFilter').value,d=$('draftFilter').value,q=$('searchBox').value.trim(); filtered=raw.filter(r=>(!p||r._province===p)&&(!o||r._office===o)&&(!a||r._approvalLevel===a)&&(!d||r._draftLevel===d)&&(!q||(r._province+r._office).includes(q))); provAgg=aggregate(filtered); renderAll()}
-function makeCard(label,val,sub=''){return `<div class="card"><small>${label}</small><strong>${val}</strong><div class="sub">${sub}</div></div>`}
-function renderCards(){let s=sumRows(filtered), C=k=>col[k]?num(s[col[k]]):0; $('cards').innerHTML='<div class="section">หมวดหน่วยที่ดิน</div>'+makeCard('กลุ่มข้อมูลราคาตลาด',nf.format(C('market')),'กลุ่ม')+makeCard('หน่วยที่ดินทั้งหมด',nf.format(C('unitAll')),'หน่วย')+makeCard('หน่วยที่ดินตาราง 3',nf.format(C('unitT3')),'หน่วย')+makeCard('ความแตกต่างหน่วยที่ดิน',col.unitDiff?pf.format(pct(s[col.unitDiff]))+'%':'-','ทั้งหมดกับตาราง 3')+'<div class="section">หมวดแปลงที่ดิน</div>'+makeCard('จำนวนแปลงทั้งหมด',nf.format(C('parcelAll')),'แปลง')+makeCard('แปลงอนุมัติราคาแล้ว',nf.format(C('approved')),pf.format(s._approvalPct)+'%')+makeCard('แปลงจัดทำร่างบัญชีแล้ว',nf.format(C('draft')),pf.format(s._draftPct)+'%')+makeCard('ยังไม่ได้คำนวณราคา',nf.format(C('notCalc')),'แปลง')+makeCard('รออนุมัติ',nf.format(C('pending')),'แปลง')+makeCard('คำนวณราคาไม่ได้',nf.format(C('cannot')),'แปลง')+makeCard('ไม่ผ่านการพิจารณา',nf.format(C('reject')),'แปลง')+makeCard('สถานะร่างบัญชี',`<span class="pill ${pill(s._draftLevel)}" style="background:${color(s._draftLevel)}">${s._draftLevel}</span>`,pf.format(s._draftPct)+'%')}
-function geoName(f){let n=f.properties.name||f.properties.NAME_1||f.properties.NAME||''; return EN2TH[n]||String(n).replace('Changwat ','').trim()}
-function aggOf(name){let nn=normProvince(name); return provAgg.find(r=>normProvince(r._province)===nn)}
-function styleFeature(f){let name=geoName(f), r=aggOf(name), lv=r?(mapMode==='approval'?r._approvalLevel:r._draftLevel):'ยังไม่ดำเนินการ', selected=$('provinceFilter').value&&normProvince($('provinceFilter').value)===normProvince(name); return {color:selected?'#073d7a':'#ffffff',weight:selected?3:1,opacity:1,fillColor:color(lv),fillOpacity:r?0.78:0.20}}
-function popup(r,name){if(!r)return `<div class="pop-title">${name}</div><div>ไม่พบข้อมูลของจังหวัดนี้ตามตัวกรองปัจจุบัน</div>`; let prog=mapMode==='approval'?r._approvalPct:r._draftPct, lv=mapMode==='approval'?r._approvalLevel:r._draftLevel, C=k=>col[k]?num(r[col[k]]):0; return `<div class="pop-title">${r._province}</div><div class="pop-row"><span>จำนวนแปลง</span><b>${nf.format(C('parcelAll'))}</b></div><div class="pop-row"><span>จำนวนหน่วยที่ดินทั้งหมด</span><b>${nf.format(C('unitAll'))}</b></div><div class="pop-row"><span>กลุ่มข้อมูลราคาตลาด</span><b>${nf.format(C('market'))}</b></div><div class="pop-row"><span>แปลงอนุมัติราคาแล้ว</span><b>${nf.format(C('approved'))}</b></div><div class="pop-row"><span>แปลงจัดทำร่างบัญชีแล้ว</span><b>${nf.format(C('draft'))}</b></div><div class="pop-row"><span>เปอร์เซ็นต์ความก้าวหน้า</span><b>${pf.format(prog)}%</b></div><div class="pop-row"><span>ระดับ</span><b style="color:${color(lv)}">${lv}</b></div>`}
-function initMap(){map=L.map('map',{preferCanvas:true}).setView([13.6,101.2],6); L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{opacity:.32,attribution:'&copy; OpenStreetMap'}).addTo(map)}
-async function loadGeo(){let res=await fetch(THAI_GEO_URL); if(!res.ok) throw new Error('โหลด GeoJSON ไม่สำเร็จ'); let gj=await res.json(); geoLayer=L.geoJSON(gj,{style:styleFeature,onEachFeature:(f,layer)=>{let name=geoName(f); layer.bindPopup(()=>popup(aggOf(name),name)); layer.on({mouseover:e=>{let r=aggOf(name); e.target.setStyle({weight:2.5,color:'#075aa8',fillOpacity:.9}); e.target.bindTooltip(r?`${r._province} : ${pf.format(mapMode==='approval'?r._approvalPct:r._draftPct)}%`:name,{sticky:true}).openTooltip()},mouseout:e=>geoLayer&&geoLayer.resetStyle(e.target),click:e=>{let r=aggOf(name); if(r){$('provinceFilter').value=r._province; updateOfficeOptions(); $('officeFilter').value=''; apply(); map.fitBounds(e.target.getBounds(),{padding:[25,25]}); e.target.openPopup()}}})}}).addTo(map); map.fitBounds(geoLayer.getBounds(),{padding:[15,15]})}
-function renderMap(){if(!geoLayer)return; geoLayer.setStyle(styleFeature); let p=$('provinceFilter').value, target=null; geoLayer.eachLayer(l=>{let n=geoName(l.feature); l.bindPopup(()=>popup(aggOf(n),n)); if(p&&normProvince(n)===normProvince(p))target=l}); if(target)map.fitBounds(target.getBounds(),{padding:[28,28]}); else if(!p)map.fitBounds(geoLayer.getBounds(),{padding:[15,15]})}
-function renderChart(){let rows=[...provAgg]; rows.sort(chartSort==='pct'?((a,b)=>b._draftPct-a._draftPct):((a,b)=>a._province.localeCompare(b._province,'th'))); let labels=rows.map(r=>r._province), data=rows.map(r=>+r._draftPct.toFixed(2)); if(chart)chart.destroy(); chart=new Chart($('chart'),{type:'line',data:{labels,datasets:[{label:'% จัดทำร่างบัญชี',data,borderColor:'#075aa8',backgroundColor:'rgba(7,90,168,.12)',borderWidth:3,pointRadius:4,pointHoverRadius:6,tension:.25,fill:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{font:{family:'Noto Sans Thai'}}},tooltip:{callbacks:{label:c=>' '+pf.format(c.raw)+'%'}}},scales:{y:{min:0,max:100,ticks:{callback:v=>v+'%'}},x:{ticks:{autoSkip:false,maxRotation:70,minRotation:45,font:{family:'Noto Sans Thai'}}}},onClick:(e,els)=>{if(els.length){$('provinceFilter').value=labels[els[0].index];updateOfficeOptions();$('officeFilter').value='';apply()}}}})}
-function cell(h,v){return clean(h).includes('ความแตกต่าง')?pf.format(pct(v))+'%':(String(v??'').match(/^[\d,.-]+%?$/)?nf.format(num(v)):String(v??''))}
-function renderTable(){let tableHeaders=[...headers,'ระดับอนุมัติ','% อนุมัติ','ระดับร่างบัญชี','% ร่างบัญชี']; $('tbl').querySelector('thead').innerHTML='<tr>'+tableHeaders.map(h=>`<th data-key="${h}">${h}</th>`).join('')+'</tr>'; let rows=[...filtered]; if(tableSort.key){rows.sort((a,b)=>{let k=tableSort.key, av=k==='% อนุมัติ'?a._approvalPct:k==='% ร่างบัญชี'?a._draftPct:a[k], bv=k==='% อนุมัติ'?b._approvalPct:k==='% ร่างบัญชี'?b._draftPct:b[k]; let an=num(av),bn=num(bv),cmp=(an||bn)?an-bn:String(av).localeCompare(String(bv),'th'); return cmp*tableSort.dir})} let body=$('tbl').querySelector('tbody'); if(!rows.length){body.innerHTML=`<tr><td class="empty" colspan="${tableHeaders.length}">ไม่พบข้อมูลตามเงื่อนไขที่เลือก</td></tr>`;return} body.innerHTML=rows.map(r=>'<tr>'+headers.map((h,i)=>`<td>${i<2?String(r[h]??''):cell(h,r[h])}</td>`).join('')+`<td><span class="pill ${pill(r._approvalLevel)}" style="background:${color(r._approvalLevel)}">${r._approvalLevel}</span></td><td>${pf.format(r._approvalPct)}%</td><td><span class="pill ${pill(r._draftLevel)}" style="background:${color(r._draftLevel)}">${r._draftLevel}</span></td><td>${pf.format(r._draftPct)}%</td></tr>`).join(''); body.querySelectorAll('tr').forEach((tr,i)=>tr.onclick=()=>{$('provinceFilter').value=rows[i]._province;updateOfficeOptions();$('officeFilter').value=rows[i]._office;apply()}); $('tbl').querySelectorAll('th').forEach(th=>th.onclick=()=>{let k=th.dataset.key; tableSort.dir=tableSort.key===k?-tableSort.dir:1; tableSort.key=k; renderTable()})}
-function renderAll(){renderCards();renderMap();renderChart();renderTable(); $('rowCount').textContent=`${nf.format(filtered.length)} / ${nf.format(raw.length)} รายการ`}
-function bind(){['provinceFilter','officeFilter','approvalFilter','draftFilter'].forEach(id=>$(id).addEventListener('change',()=>{if(id==='provinceFilter'){updateOfficeOptions();$('officeFilter').value=''} apply()})); $('searchBox').addEventListener('input',apply); $('clearBtn').onclick=()=>{$('provinceFilter').value='';updateOfficeOptions();$('officeFilter').value='';$('approvalFilter').value='';$('draftFilter').value='';$('searchBox').value='';apply()}; document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{mapMode=b.dataset.mode;document.querySelectorAll('[data-mode]').forEach(x=>x.classList.remove('active'));b.classList.add('active');renderMap()}); $('sortName').onclick=()=>{chartSort='name';$('sortName').classList.add('active');$('sortPct').classList.remove('active');renderChart()}; $('sortPct').onclick=()=>{chartSort='pct';$('sortPct').classList.add('active');$('sortName').classList.remove('active');renderChart()}}
-(async function main(){try{bind();initMap(); await Promise.all([loadSheet(),loadGeo()]); clearAlert(); fillFilters(); apply()}catch(e){console.error(e); $('loadStatus').textContent='มีปัญหา'; alertBox('ข้อมูลหรือแผนที่ไม่แสดง',`สาเหตุที่เป็นไปได้: Google Sheet ยังไม่ได้แชร์แบบ Anyone with the link, โหลดแผนที่จาก CDN ไม่ได้ หรือชื่อหัวคอลัมน์เปลี่ยนไป<br><br>รายละเอียด: ${e.message}`)}})();
+function makeChart(id,type,data,options={}){ if(charts[id]) charts[id].destroy(); charts[id]=new Chart(document.getElementById(id),{type,data,options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:type==='doughnut',position:'bottom'},tooltip:{callbacks:{label:(c)=>`${c.label}: ${type==='bar'?pct(c.raw):c.raw.toLocaleString('th-TH')}`}}},scales:type==='bar'?{x:{ticks:{font:{family:'Noto Sans Thai'}}},y:{beginAtZero:true,ticks:{callback:v=>v+'%'}}}:{},...options}}); }
+function renderCharts(){ const sortDesc=[...filtered].sort((a,b)=>b.progress-a.progress).slice(0,10); const need=[...filtered].filter(d=>d.progress>0).sort((a,b)=>a.progress-b.progress).slice(0,10); makeChart('topChart','bar',{labels:sortDesc.map(d=>d.province),datasets:[{label:'% การจัดทำร่างบัญชี',data:sortDesc.map(d=>d.progress),backgroundColor:'#16a34a',borderRadius:10}]},{indexAxis:'y'}); makeChart('needChart','bar',{labels:need.map(d=>d.province),datasets:[{label:'% การจัดทำร่างบัญชี',data:need.map(d=>d.progress),backgroundColor:'#dc2626',borderRadius:10}]},{indexAxis:'y'}); const st=['สูง','ปานกลาง','ต่ำ','ยังไม่เริ่ม']; makeChart('statusChart','doughnut',{labels:st,datasets:[{data:st.map(x=>filtered.filter(d=>d.status===x).length),backgroundColor:st.map(x=>COLORS[x])}]}); const reg=[...new Set(filtered.map(d=>d.region).filter(Boolean))]; makeChart('regionChart','bar',{labels:reg,datasets:[{label:'ค่าเฉลี่ย %',data:reg.map(r=>{const a=filtered.filter(d=>d.region===r); return a.length?a.reduce((x,y)=>x+y.progress,0)/a.length:0;}),backgroundColor:'#1d4ed8',borderRadius:10}]}); }
+function renderLegend(){ const st=['สูง','ปานกลาง','ต่ำ','ยังไม่เริ่ม']; legend.innerHTML=st.map(s=>`<button class="pill ${statusFilter.value===s?'active':''}" data-s="${s}"><span style="background:${COLORS[s]}"></span>${s}</button>`).join(''); legend.querySelectorAll('.pill').forEach(b=>b.onclick=()=>{statusFilter.value=statusFilter.value===b.dataset.s?'':b.dataset.s;applyFilters();}); }
+
+function initMap(){
+  map = L.map('map', {
+    scrollWheelZoom: false,
+    zoomControl: true,
+    preferCanvas: true
+  }).setView([13.4, 101.0], 6);
+
+  // ใช้แผนที่ฐานแบบจาง เพื่อให้เห็นสีขอบเขตจังหวัดชัดเจน
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution:'© OpenStreetMap © CARTO',
+    maxZoom: 10
+  }).addTo(map);
+
+  loadProvinceBoundary();
+}
+
+async function loadProvinceBoundary(){
+  for(const url of GEOJSON_URLS){
+    try{
+      const res = await fetch(url);
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      const gj = await res.json();
+      if(gj && gj.features && gj.features.length){
+        provinceGeoJson = gj;
+        renderMap();
+        return;
+      }
+    }catch(e){
+      console.warn('โหลดขอบเขตจังหวัดไม่สำเร็จ:', url, e);
+    }
+  }
+
+  document.getElementById('map').innerHTML =
+    '<div style="padding:20px;color:#b42318;background:#fff3f3;border-radius:14px;margin:14px;">ไม่สามารถโหลดไฟล์ขอบเขตจังหวัดได้ กรุณาตรวจสอบอินเทอร์เน็ต หรือเปิดผ่าน GitHub Pages/HTTPS</div>';
+}
+
+function getFeatureProvinceName(feature){
+  const p = feature.properties || {};
+  const possible = [
+    p.name, p.NAME, p.Name, p.NAME_1, p.name_1, p.province, p.Province,
+    p.PROV_NAMT, p.PROV_NAME, p.ADM1_TH, p.ADM1_EN, p.NL_NAME_1,
+    p.th, p.TH, p.tname, p.T_NAME
+  ].filter(Boolean).map(v => clean(v).replace(/^จังหวัด/, ''));
+
+  for(const name of possible){
+    if(rawData.some(d => d.province === name)) return name;
+    if(PROVINCE_ALIASES[name]) return PROVINCE_ALIASES[name];
+  }
+
+  for(const k of Object.keys(p)){
+    const val = clean(p[k]).replace(/^จังหวัด/, '');
+    if(rawData.some(d => d.province === val)) return val;
+    if(PROVINCE_ALIASES[val]) return PROVINCE_ALIASES[val];
+  }
+  return '';
+}
+
+function provinceStyle(feature){
+  const name = getFeatureProvinceName(feature);
+  const d = filtered.find(x => x.province === name);
+  const all = rawData.find(x => x.province === name);
+  const visible = !!d;
+  const status = (d || all || {}).status || 'ยังไม่เริ่ม';
+  return {
+    fillColor: visible ? COLORS[status] : '#e5e7eb',
+    weight: visible ? 1.15 : .65,
+    opacity: 1,
+    color: visible ? '#ffffff' : '#cbd5e1',
+    fillOpacity: visible ? .84 : .22
+  };
+}
+
+function renderMap(){
+  if(!map) initMap();
+  if(!provinceGeoJson) return;
+
+  if(geoJsonLayer){
+    geoJsonLayer.remove();
+    geoJsonLayer = null;
+  }
+
+  geoJsonLayer = L.geoJSON(provinceGeoJson, {
+    style: provinceStyle,
+    onEachFeature: (feature, layer) => {
+      const name = getFeatureProvinceName(feature);
+      const d = rawData.find(x => x.province === name);
+      const inFilter = filtered.find(x => x.province === name);
+
+      if(d){
+        layer.bindTooltip(
+          `<b>${d.province}</b><br>
+           สถานะ: <b>${d.status}</b><br>
+           % การจัดทำร่างบัญชี: <b>${pct(d.progress)}</b><br>
+           จำนวนแปลงที่จัดทำร่างบัญชี: <b>${fmt(d.drafted)}</b><br>
+           จำนวนแปลงทั้งหมด: <b>${fmt(d.total)}</b>`,
+          {sticky:true}
+        );
+
+        layer.on({
+          mouseover: e => {
+            e.target.setStyle({weight:3, color:'#0f172a', fillOpacity:.96});
+            e.target.bringToFront();
+          },
+          mouseout: e => geoJsonLayer.resetStyle(e.target),
+          click: () => {
+            provinceFilter.value = d.province;
+            applyFilters();
+          }
+        });
+      }else{
+        layer.bindTooltip('ไม่พบข้อมูลจังหวัดนี้ใน Google Sheet', {sticky:true});
+      }
+
+      if(!inFilter && d){
+        layer.setStyle({fillColor:'#e5e7eb',fillOpacity:.18,color:'#cbd5e1',weight:.65});
+      }
+    }
+  }).addTo(map);
+
+  try{
+    const layers = [];
+    geoJsonLayer.eachLayer(layer => {
+      const name = getFeatureProvinceName(layer.feature);
+      if(filtered.some(d => d.province === name)) layers.push(layer);
+    });
+    const group = L.featureGroup(layers.length ? layers : Object.values(geoJsonLayer._layers));
+    map.fitBounds(group.getBounds(), {padding:[18,18], maxZoom:7});
+  }catch(e){
+    map.setView([13.4,101.0],6);
+  }
+}
+
+function renderTable(){ const cols=[['province','จังหวัด'],['region','ภูมิภาค'],
+['unitTotal','หน่วยที่ดินทั้งหมด'],['marketGroup','กลุ่มข้อมูลราคาตลาด'],
+['unitTable3','หน่วยที่ดินตาราง 3'],['unitTablePct','ร้อยละหน่วยที่ดินในตารางบัญชีฯ'],
+['total','จำนวนแปลงทั้งหมด'],['approved','จำนวนแปลงที่อนุมัติทำร่างบัญชี'],
+['approvedPct','% แปลงที่อนุมัติจัดทำร่างบัญชี'],
+['drafted','จำนวนแปลงที่จัดทำร่างบัญชี'],['progress','สถานะร่างบัญชี'],['status','สถานะ']]; dataTable.querySelector('thead').innerHTML='<tr>'+cols.map(c=>`<th data-k="${c[0]}">${c[1]}</th>`).join('')+'</tr>'; const rows=[...filtered].sort((a,b)=>{ let av=a[sortKey], bv=b[sortKey]; if(sortKey==='status'||sortKey==='province'||sortKey==='region') return sortDir==='asc'?String(av).localeCompare(String(bv),'th'):String(bv).localeCompare(String(av),'th'); return sortDir==='asc'?av-bv:bv-av; }); dataTable.querySelector('tbody').innerHTML=rows.map(d=>`<tr><td>${d.province}</td><td>${d.region}</td><td class="num">${fmt(d.unitTotal)}</td><td class="num">${fmt(d.marketGroup)}</td><td class="num">${fmt(d.unitTable3)}</td><td class="num">${pct(d.unitTablePct)}</td><td class="num">${fmt(d.total)}</td><td class="num">${fmt(d.approved)}</td><td class="num">${pct(d.approvedPct)}</td><td class="num">${fmt(d.drafted)}</td><td class="num"><b>${pct(d.progress)}</b></td><td><span class="status ${STATUS_CLASS[d.status]}">${d.status}</span></td></tr>`).join(''); dataTable.querySelectorAll('th').forEach(th=>th.onclick=()=>{ const k=th.dataset.k; if(sortKey===k) sortDir=sortDir==='asc'?'desc':'asc'; else {sortKey=k; sortDir=(k==='province'||k==='region'||k==='status')?'asc':'desc';} renderTable(); }); }
+function renderAll(){ renderCards(); renderLegend(); renderCharts(); renderMap(); renderTable(); updatedAt.textContent=`อัปเดตข้อมูลล่าสุด ${new Date().toLocaleString('th-TH')}`; }
+['change','input'].forEach(ev=>{ regionFilter.addEventListener(ev,applyFilters); statusFilter.addEventListener(ev,applyFilters); provinceFilter.addEventListener(ev,applyFilters); searchBox.addEventListener(ev,applyFilters); }); resetBtn.onclick=()=>{regionFilter.value='';statusFilter.value='';provinceFilter.value='';searchBox.value='';applyFilters();};
+Papa.parse(CSV_URL,{download:true,header:true,skipEmptyLines:true,complete:(res)=>{ rawData=res.data.map(normalizeRow).filter(d=>d.province); filtered=[...rawData]; initFilters(); renderAll(); },error:(err)=>{ document.body.insertAdjacentHTML('afterbegin',`<div class="loading">ไม่สามารถอ่าน Google Sheet ได้ กรุณาตรวจสอบว่าไฟล์เปิดสิทธิ์เป็น Anyone with the link และลองรีเฟรชหน้าเว็บ</div>`); console.error(err); }});
 </script>
 </body>
 </html>
