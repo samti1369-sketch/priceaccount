@@ -83,9 +83,9 @@
 </div>
 
 <script>
-const SHEET_ID = '11hWDoMcLl-tG6cJfxDQ6WX7wc3V1MhPuTh9m_Dh9F-o';
+const SHEET_ID = '1iXez6k90QeyoXsWsujrWxwBV_6Yuc8_9Z-okH6on0fk';
 const GID = '0';
-const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=${GID}`;
+const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=${GID}&_=${Date.now()}`;
 const COLORS = { 'สูง':'#16a34a', 'ปานกลาง':'#f59e0b', 'ต่ำ':'#dc2626', 'ยังไม่เริ่ม':'#9ca3af' };
 const STATUS_CLASS = { 'สูง':'high', 'ปานกลาง':'mid', 'ต่ำ':'low', 'ยังไม่เริ่ม':'zero' };
 
@@ -126,8 +126,9 @@ let provinceGeoJson = null;
 let geoJsonLayer = null;
 let rawData=[], filtered=[], sortKey='progress', sortDir='desc', charts={}, map;
 function clean(s){ return String(s||'').replace(/\s+/g,' ').trim(); }
+function keyNorm(s){ return clean(s).toLowerCase().replace(/[\s().%ฯ_\-]/g,''); }
 function num(v){ if(v===null||v===undefined||v==='') return 0; let s=String(v).replace(/,/g,'').replace(/%/g,'').trim(); return parseFloat(s)||0; }
-function pick(row, names){ const keys=Object.keys(row); for(const n of names){ const k=keys.find(x=>clean(x)===n || clean(x).includes(n)); if(k) return row[k]; } return ''; }
+function pick(row, names){ const keys=Object.keys(row); for(const n of names){ const nn=keyNorm(n); const k=keys.find(x=>{const xx=keyNorm(x); return xx===nn || xx.includes(nn) || nn.includes(xx);}); if(k) return row[k]; } return ''; }
 function statusOf(p){ if(p>=80) return 'สูง'; if(p>=50) return 'ปานกลาง'; if(p>=1) return 'ต่ำ'; return 'ยังไม่เริ่ม'; }
 function fmt(n){ return Math.round(num(n)).toLocaleString('th-TH'); } function pct(n){ return (num(n)).toLocaleString('th-TH',{minimumFractionDigits:2,maximumFractionDigits:2})+'%'; }
 function normalizeRow(row){
@@ -136,13 +137,13 @@ function normalizeRow(row){
 
   // หมวดหน่วยที่ดิน
   const unitTotal = num(pick(row,[
-    'จำนวนหน่วยที่ดินทั้งหมด','หน่วยที่ดินทั้งหมด','จำนวนหน่วยทั้งหมด'
+    'หน่วยที่ดินทั้งหมด (หน่วย)','จำนวนหน่วยที่ดินทั้งหมด','หน่วยที่ดินทั้งหมด','จำนวนหน่วยทั้งหมด'
   ]));
   const marketGroup = num(pick(row,[
-    'กลุ่มข้อมูลราคาตลาด','จำนวนกลุ่มข้อมูลราคาตลาด','ข้อมูลราคาตลาด'
+    'กลุ่มข้อมูลราคาตลาด(ต.2)(หน่วย)','กลุ่มข้อมูลราคาตลาด','จำนวนกลุ่มข้อมูลราคาตลาด','ข้อมูลราคาตลาด'
   ]));
   const unitTable3 = num(pick(row,[
-    'หน่วยที่ดินตาราง 3','จำนวนหน่วยที่ดินตาราง 3','หน่วยที่ดินในตาราง 3',
+    'หน่วยที่ดินในตาราง 3 (หน่วย)','หน่วยที่ดินตาราง 3','จำนวนหน่วยที่ดินตาราง 3','หน่วยที่ดินในตาราง 3',
     'จำนวนหน่วยที่ดินในตารางบัญชี','หน่วยที่ดินตารางบัญชี'
   ]));
   const unitTablePct = unitTotal > 0 ? (unitTable3 / unitTotal) * 100 : 0;
@@ -150,7 +151,7 @@ function normalizeRow(row){
   // หมวดแปลงที่ดิน
   const total = num(pick(row,['จำนวนแปลงทั้งหมด']));
   const approved = num(pick(row,[
-    'จำนวนแปลงที่อนุมัติทำร่างบัญชี','จำนวนแปลงที่อนุมัติราคาแล้ว',
+    'แปลงที่ดินอนุมัติแล้ว (แปลง)','จำนวนแปลงที่อนุมัติทำร่างบัญชี','จำนวนแปลงที่อนุมัติราคาแล้ว',
     'จำนวนแปลงที่อนุมัติ','แปลงที่อนุมัติแล้ว'
   ]));
   const approvedPct = num(pick(row,[
@@ -158,7 +159,7 @@ function normalizeRow(row){
     'ร้อยละแปลงที่อนุมัติ'
   ]));
   const drafted = num(pick(row,[
-    'จำนวนแปลงที่จัดทำร่างบัญชี','จำนวนแปลงที่จัดทำร่างบัญชีแล้ว',
+    'แปลงที่ดินที่จัดทำร่างบัญชี','จำนวนแปลงที่จัดทำร่างบัญชี','จำนวนแปลงที่จัดทำร่างบัญชีแล้ว',
     'แปลงจัดทำร่างบัญชีแล้ว'
   ]));
   // คำนวณใหม่: แปลงจัดทำร่างบัญชีแล้ว ÷ จำนวนแปลงทั้งหมด × 100
@@ -365,7 +366,19 @@ function renderTable(){ const cols=[['province','จังหวัด'],['regio
 ['drafted','จำนวนแปลงที่จัดทำร่างบัญชี'],['progress','สถานะร่างบัญชี'],['status','สถานะ']]; dataTable.querySelector('thead').innerHTML='<tr>'+cols.map(c=>`<th data-k="${c[0]}">${c[1]}</th>`).join('')+'</tr>'; const rows=[...filtered].sort((a,b)=>{ let av=a[sortKey], bv=b[sortKey]; if(sortKey==='status'||sortKey==='province'||sortKey==='region') return sortDir==='asc'?String(av).localeCompare(String(bv),'th'):String(bv).localeCompare(String(av),'th'); return sortDir==='asc'?av-bv:bv-av; }); dataTable.querySelector('tbody').innerHTML=rows.map(d=>`<tr><td>${d.province}</td><td>${d.region}</td><td class="num">${fmt(d.unitTotal)}</td><td class="num">${fmt(d.marketGroup)}</td><td class="num">${fmt(d.unitTable3)}</td><td class="num">${pct(d.unitTablePct)}</td><td class="num">${fmt(d.total)}</td><td class="num">${fmt(d.approved)}</td><td class="num">${pct(d.approvedPct)}</td><td class="num">${fmt(d.drafted)}</td><td class="num"><b>${pct(d.progress)}</b></td><td><span class="status ${STATUS_CLASS[d.status]}">${d.status}</span></td></tr>`).join(''); dataTable.querySelectorAll('th').forEach(th=>th.onclick=()=>{ const k=th.dataset.k; if(sortKey===k) sortDir=sortDir==='asc'?'desc':'asc'; else {sortKey=k; sortDir=(k==='province'||k==='region'||k==='status')?'asc':'desc';} renderTable(); }); }
 function renderAll(){ renderCards(); renderLegend(); renderCharts(); renderMap(); renderTable(); updatedAt.textContent=`อัปเดตข้อมูลล่าสุด ${new Date().toLocaleString('th-TH')}`; }
 ['change','input'].forEach(ev=>{ regionFilter.addEventListener(ev,applyFilters); statusFilter.addEventListener(ev,applyFilters); provinceFilter.addEventListener(ev,applyFilters); searchBox.addEventListener(ev,applyFilters); }); resetBtn.onclick=()=>{regionFilter.value='';statusFilter.value='';provinceFilter.value='';searchBox.value='';applyFilters();};
-Papa.parse(CSV_URL,{download:true,header:true,skipEmptyLines:true,complete:(res)=>{ rawData=res.data.map(normalizeRow).filter(d=>d.province); filtered=[...rawData]; initFilters(); renderAll(); },error:(err)=>{ document.body.insertAdjacentHTML('afterbegin',`<div class="loading">ไม่สามารถอ่าน Google Sheet ได้ กรุณาตรวจสอบว่าไฟล์เปิดสิทธิ์เป็น Anyone with the link และลองรีเฟรชหน้าเว็บ</div>`); console.error(err); }});
+Papa.parse(CSV_URL,{download:true,header:true,skipEmptyLines:true,complete:(res)=>{
+  rawData=res.data.map(normalizeRow).filter(d=>d.province);
+  filtered=[...rawData];
+  if(!rawData.length){
+    document.body.insertAdjacentHTML('afterbegin',`<div class="loading" style="background:#fff3f3;color:#b42318">อ่าน Google Sheet ได้ แต่ไม่พบข้อมูลจังหวัด กรุณาตรวจสอบหัวตารางแถวที่ 1</div>`);
+    return;
+  }
+  const unitSum=rawData.reduce((a,b)=>a+b.unitTotal+b.unitTable3+b.marketGroup,0);
+  if(unitSum===0){
+    console.warn('ไม่พบค่าหมวดหน่วยที่ดิน หัวคอลัมน์ที่อ่านได้:',res.meta.fields);
+  }
+  initFilters(); renderAll();
+},error:(err)=>{ document.body.insertAdjacentHTML('afterbegin',`<div class="loading" style="background:#fff3f3;color:#b42318">ไม่สามารถอ่าน Google Sheet ได้ กรุณาตรวจสอบสิทธิ์การแชร์และเปิดผ่าน GitHub Pages/HTTPS</div>`); console.error(err); }});
 </script>
 </body>
 </html>
