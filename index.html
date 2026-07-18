@@ -79,7 +79,7 @@
     <div class="panel"><h2>10 อันดับจังหวัดที่ต้องเร่งรัด <span style="font-size:12px;color:var(--muted)">(ไม่รวม 0%)</span></h2><div class="chartbox"><canvas id="needChart"></canvas></div></div>
   </section>
 
-  <section class="panel" style="margin-top:16px"><div class="table-tools"><h2>ตารางรายละเอียดจังหวัดทั้ง 77 จังหวัด</h2><div class="field search"><input id="searchBox" placeholder="ค้นหาจังหวัด / ภูมิภาค / สถานะ"></div></div><div class="table-wrap"><table id="dataTable"><thead></thead><tbody></tbody></table></div><div class="foot">กดหัวคอลัมน์เพื่อเรียงจากมากไปน้อยหรือจากน้อยไปมาก</div></section>
+  <section class="panel" style="margin-top:16px"><div class="table-tools"><h2>ตารางรายละเอียดจังหวัดทั้ง 77 จังหวัด</h2><div class="field search"><input id="searchBox" placeholder="ค้นหาจังหวัด / สำนักงานที่ดิน / ภูมิภาค / สถานะ"></div></div><div class="table-wrap"><table id="dataTable"><thead></thead><tbody></tbody></table></div><div class="foot">กดหัวคอลัมน์เพื่อเรียงจากมากไปน้อยหรือจากน้อยไปมาก</div></section>
 </div>
 
 <script>
@@ -134,6 +134,9 @@ function fmt(n){ return Math.round(num(n)).toLocaleString('th-TH'); } function p
 function normalizeRow(row){
   const province = clean(pick(row,['จังหวัด']));
   const region = clean(pick(row,['ภูมิภาค']));
+  const landOffice = clean(pick(row,[
+    'สำนักงานที่ดิน','ชื่อสำนักงานที่ดิน','สนง.ที่ดิน','สำนักงานที่ดินจังหวัด'
+  ]));
 
   // หมวดหน่วยที่ดิน
   const unitTotal = num(pick(row,[
@@ -166,14 +169,25 @@ function normalizeRow(row){
   const progress = total > 0 ? (drafted / total) * 100 : 0;
 
   return {
-    province,region,
+    province,region,landOffice,
     unitTotal,marketGroup,unitTable3,unitTablePct,
     total,approved,approvedPct,drafted,progress,
     status:statusOf(progress)
   };
 }
-function applyFilters(){ const r=regionFilter.value, s=statusFilter.value, p=provinceFilter.value, q=clean(searchBox.value).toLowerCase(); filtered=rawData.filter(d=>(!r||d.region===r)&&(!s||d.status===s)&&(!p||d.province===p)&&(!q||`${d.province} ${d.region} ${d.status}`.toLowerCase().includes(q))); renderAll(); }
-function initFilters(){ [...new Set(rawData.map(d=>d.region).filter(Boolean))].sort().forEach(v=>regionFilter.add(new Option(v,v))); rawData.map(d=>d.province).sort((a,b)=>a.localeCompare(b,'th')).forEach(v=>provinceFilter.add(new Option(v,v))); }
+function applyFilters(){ const r=regionFilter.value, s=statusFilter.value, p=provinceFilter.value, q=clean(searchBox.value).toLowerCase(); filtered=rawData.filter(d=>(!r||d.region===r)&&(!s||d.status===s)&&(!p||d.province===p)&&(!q||`${d.province} ${d.landOffice} ${d.region} ${d.status}`.toLowerCase().includes(q))); renderAll(); }
+function initFilters(){
+  regionFilter.innerHTML = '<option value="">ทุกภูมิภาค</option>';
+  provinceFilter.innerHTML = '<option value="">ทุกจังหวัด</option>';
+
+  [...new Set(rawData.map(d=>d.region).filter(Boolean))]
+    .sort((a,b)=>a.localeCompare(b,'th'))
+    .forEach(v=>regionFilter.add(new Option(v,v)));
+
+  [...new Set(rawData.map(d=>d.province).filter(Boolean))]
+    .sort((a,b)=>a.localeCompare(b,'th'))
+    .forEach(v=>provinceFilter.add(new Option(v,v)));
+}
 function renderCards(){
   const count = filtered.length;
 
@@ -358,12 +372,12 @@ function renderMap(){
   }
 }
 
-function renderTable(){ const cols=[['province','จังหวัด'],['region','ภูมิภาค'],
+function renderTable(){ const cols=[['province','จังหวัด'],['landOffice','สำนักงานที่ดิน'],['region','ภูมิภาค'],
 ['unitTotal','หน่วยที่ดินทั้งหมด'],['marketGroup','กลุ่มข้อมูลราคาตลาด'],
 ['unitTable3','หน่วยที่ดินตาราง 3'],['unitTablePct','ร้อยละหน่วยที่ดินในตารางบัญชีฯ'],
 ['total','จำนวนแปลงทั้งหมด'],['approved','จำนวนแปลงที่อนุมัติทำร่างบัญชี'],
 ['approvedPct','% แปลงที่อนุมัติจัดทำร่างบัญชี'],
-['drafted','จำนวนแปลงที่จัดทำร่างบัญชี'],['progress','สถานะร่างบัญชี'],['status','สถานะ']]; dataTable.querySelector('thead').innerHTML='<tr>'+cols.map(c=>`<th data-k="${c[0]}">${c[1]}</th>`).join('')+'</tr>'; const rows=[...filtered].sort((a,b)=>{ let av=a[sortKey], bv=b[sortKey]; if(sortKey==='status'||sortKey==='province'||sortKey==='region') return sortDir==='asc'?String(av).localeCompare(String(bv),'th'):String(bv).localeCompare(String(av),'th'); return sortDir==='asc'?av-bv:bv-av; }); dataTable.querySelector('tbody').innerHTML=rows.map(d=>`<tr><td>${d.province}</td><td>${d.region}</td><td class="num">${fmt(d.unitTotal)}</td><td class="num">${fmt(d.marketGroup)}</td><td class="num">${fmt(d.unitTable3)}</td><td class="num">${pct(d.unitTablePct)}</td><td class="num">${fmt(d.total)}</td><td class="num">${fmt(d.approved)}</td><td class="num">${pct(d.approvedPct)}</td><td class="num">${fmt(d.drafted)}</td><td class="num"><b>${pct(d.progress)}</b></td><td><span class="status ${STATUS_CLASS[d.status]}">${d.status}</span></td></tr>`).join(''); dataTable.querySelectorAll('th').forEach(th=>th.onclick=()=>{ const k=th.dataset.k; if(sortKey===k) sortDir=sortDir==='asc'?'desc':'asc'; else {sortKey=k; sortDir=(k==='province'||k==='region'||k==='status')?'asc':'desc';} renderTable(); }); }
+['drafted','จำนวนแปลงที่จัดทำร่างบัญชี'],['progress','สถานะร่างบัญชี'],['status','สถานะ']]; dataTable.querySelector('thead').innerHTML='<tr>'+cols.map(c=>`<th data-k="${c[0]}">${c[1]}</th>`).join('')+'</tr>'; const rows=[...filtered].sort((a,b)=>{ let av=a[sortKey], bv=b[sortKey]; if(sortKey==='status'||sortKey==='province'||sortKey==='landOffice'||sortKey==='region') return sortDir==='asc'?String(av).localeCompare(String(bv),'th'):String(bv).localeCompare(String(av),'th'); return sortDir==='asc'?av-bv:bv-av; }); dataTable.querySelector('tbody').innerHTML=rows.map(d=>`<tr><td>${d.province}</td><td>${d.landOffice || '-'}</td><td>${d.region}</td><td class="num">${fmt(d.unitTotal)}</td><td class="num">${fmt(d.marketGroup)}</td><td class="num">${fmt(d.unitTable3)}</td><td class="num">${pct(d.unitTablePct)}</td><td class="num">${fmt(d.total)}</td><td class="num">${fmt(d.approved)}</td><td class="num">${pct(d.approvedPct)}</td><td class="num">${fmt(d.drafted)}</td><td class="num"><b>${pct(d.progress)}</b></td><td><span class="status ${STATUS_CLASS[d.status]}">${d.status}</span></td></tr>`).join(''); dataTable.querySelectorAll('th').forEach(th=>th.onclick=()=>{ const k=th.dataset.k; if(sortKey===k) sortDir=sortDir==='asc'?'desc':'asc'; else {sortKey=k; sortDir=(k==='province'||k==='landOffice'||k==='region'||k==='status')?'asc':'desc';} renderTable(); }); }
 function renderAll(){ renderCards(); renderLegend(); renderCharts(); renderMap(); renderTable(); updatedAt.textContent=`อัปเดตข้อมูลล่าสุด ${new Date().toLocaleString('th-TH')}`; }
 ['change','input'].forEach(ev=>{ regionFilter.addEventListener(ev,applyFilters); statusFilter.addEventListener(ev,applyFilters); provinceFilter.addEventListener(ev,applyFilters); searchBox.addEventListener(ev,applyFilters); }); resetBtn.onclick=()=>{regionFilter.value='';statusFilter.value='';provinceFilter.value='';searchBox.value='';applyFilters();};
 Papa.parse(CSV_URL,{download:true,header:true,skipEmptyLines:true,complete:(res)=>{
