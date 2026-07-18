@@ -189,7 +189,9 @@ function initFilters(){
     .forEach(v=>provinceFilter.add(new Option(v,v)));
 }
 function renderCards(){
-  const count = filtered.length;
+  const officeCount = new Set(
+    filtered.map(d=>d.landOffice).filter(Boolean)
+  ).size;
 
   // รวมยอดตามข้อมูลที่อยู่ภายใต้ตัวกรองปัจจุบัน
   const unitTotal = filtered.reduce((a,b)=>a+b.unitTotal,0);
@@ -214,7 +216,7 @@ function renderCards(){
 
   // คง Card อื่นเดิมไว้ และเปลี่ยนเฉพาะสถานะร่างบัญชีเป็นค่าคำนวณ
   const parcelItems = [
-    ['จำนวนจังหวัด',fmt(count),'พื้นที่',''],
+    ['จำนวนสำนักงานที่ดิน',fmt(officeCount),'แห่ง',''],
     ['จำนวนแปลงทั้งหมด',fmt(total),'โฉนดที่ดิน และ น.ส.๓ก.',''],
     ['จำนวนแปลงที่อนุมัติทำร่างบัญชี',fmt(approved),'แปลง',''],
     ['% แปลงที่อนุมัติจัดทำร่างบัญชี',pct(approvedPct),'เทียบจำนวนแปลงทั้งหมด',
