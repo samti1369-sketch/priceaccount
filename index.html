@@ -74,11 +74,6 @@
     <div class="panel"><h2>ภาพรวมสถานะและภูมิภาค</h2><div class="chartbox mini"><canvas id="statusChart"></canvas></div><div class="chartbox mini"><canvas id="regionChart"></canvas></div></div>
   </section>
 
-  <section class="charts">
-    <div class="panel"><h2>10 อันดับจังหวัดที่ทำได้ดีที่สุด</h2><div class="chartbox"><canvas id="topChart"></canvas></div></div>
-    <div class="panel"><h2>10 อันดับจังหวัดที่ต้องเร่งรัด <span style="font-size:12px;color:var(--muted)">(ไม่รวม 0%)</span></h2><div class="chartbox"><canvas id="needChart"></canvas></div></div>
-  </section>
-
   <section class="panel" style="margin-top:16px"><div class="table-tools"><h2>ตารางรายละเอียดจังหวัดทั้ง 77 จังหวัด</h2><div class="field search"><input id="searchBox" placeholder="ค้นหาจังหวัด / สำนักงานที่ดิน / ภูมิภาค / สถานะ"></div></div><div class="table-wrap"><table id="dataTable"><thead></thead><tbody></tbody></table></div><div class="foot">กดหัวคอลัมน์เพื่อเรียงจากมากไปน้อยหรือจากน้อยไปมาก</div></section>
 </div>
 
@@ -203,8 +198,6 @@ function renderCards(){
   const approved = filtered.reduce((a,b)=>a+b.approved,0);
   const drafted = filtered.reduce((a,b)=>a+b.drafted,0);
   const approvedPct = total > 0 ? (approved / total) * 100 : 0;
-  const draftStatusPct = total > 0 ? (drafted / total) * 100 : 0;
-  const zero = filtered.filter(d=>d.status==='ยังไม่เริ่ม').length;
 
   const unitItems = [
     ['หน่วยที่ดินทั้งหมด',fmt(unitTotal),'หน่วยที่ดิน',''],
@@ -220,11 +213,7 @@ function renderCards(){
     ['จำนวนแปลงทั้งหมด',fmt(total),'โฉนดที่ดิน และ น.ส.๓ก.',''],
     ['จำนวนแปลงที่อนุมัติทำร่างบัญชี',fmt(approved),'แปลง',''],
     ['% แปลงที่อนุมัติจัดทำร่างบัญชี',pct(approvedPct),'เทียบจำนวนแปลงทั้งหมด',
-      'จำนวนแปลงที่อนุมัติแล้ว ÷ จำนวนแปลงทั้งหมด × 100'],
-    ['จำนวนแปลงที่จัดทำร่างบัญชี',fmt(drafted),'แปลง',''],
-    ['สถานะร่างบัญชี',pct(draftStatusPct),'ความก้าวหน้ารวมของพื้นที่ที่แสดง',
-      'แปลงจัดทำร่างบัญชีแล้ว ÷ จำนวนแปลงทั้งหมด × 100'],
-    ['จังหวัดที่ยังไม่เริ่ม',fmt(zero),'จังหวัด','']
+      'จำนวนแปลงที่อนุมัติแล้ว ÷ จำนวนแปลงทั้งหมด × 100']
   ];
 
   const cardHtml = (x,highlight=false)=>`
@@ -239,7 +228,18 @@ function renderCards(){
   parcelCards.innerHTML = parcelItems.map((x,i)=>cardHtml(x,i===5)).join('');
 }
 function makeChart(id,type,data,options={}){ if(charts[id]) charts[id].destroy(); charts[id]=new Chart(document.getElementById(id),{type,data,options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:type==='doughnut',position:'bottom'},tooltip:{callbacks:{label:(c)=>`${c.label}: ${type==='bar'?pct(c.raw):c.raw.toLocaleString('th-TH')}`}}},scales:type==='bar'?{x:{ticks:{font:{family:'Noto Sans Thai'}}},y:{beginAtZero:true,ticks:{callback:v=>v+'%'}}}:{},...options}}); }
-function renderCharts(){ const sortDesc=[...filtered].sort((a,b)=>b.progress-a.progress).slice(0,10); const need=[...filtered].filter(d=>d.progress>0).sort((a,b)=>a.progress-b.progress).slice(0,10); makeChart('topChart','bar',{labels:sortDesc.map(d=>d.province),datasets:[{label:'% การจัดทำร่างบัญชี',data:sortDesc.map(d=>d.progress),backgroundColor:'#16a34a',borderRadius:10}]},{indexAxis:'y'}); makeChart('needChart','bar',{labels:need.map(d=>d.province),datasets:[{label:'% การจัดทำร่างบัญชี',data:need.map(d=>d.progress),backgroundColor:'#dc2626',borderRadius:10}]},{indexAxis:'y'}); const st=['สูง','ปานกลาง','ต่ำ','ยังไม่เริ่ม']; makeChart('statusChart','doughnut',{labels:st,datasets:[{data:st.map(x=>filtered.filter(d=>d.status===x).length),backgroundColor:st.map(x=>COLORS[x])}]}); const reg=[...new Set(filtered.map(d=>d.region).filter(Boolean))]; makeChart('regionChart','bar',{labels:reg,datasets:[{label:'ค่าเฉลี่ย %',data:reg.map(r=>{const a=filtered.filter(d=>d.region===r); return a.length?a.reduce((x,y)=>x+y.progress,0)/a.length:0;}),backgroundColor:'#1d4ed8',borderRadius:10}]}); }
+function renderCharts(){
+  const st=['สูง','ปานกลาง','ต่ำ','ยังไม่เริ่ม'];
+  makeChart('statusChart','doughnut',{
+    labels:st,
+    datasets:[{data:st.map(x=>filtered.filter(d=>d.status===x).length),backgroundColor:st.map(x=>COLORS[x])}]
+  });
+  const reg=[...new Set(filtered.map(d=>d.region).filter(Boolean))];
+  makeChart('regionChart','bar',{
+    labels:reg,
+    datasets:[{label:'ค่าเฉลี่ย %',data:reg.map(r=>{const a=filtered.filter(d=>d.region===r); return a.length?a.reduce((x,y)=>x+y.progress,0)/a.length:0;}),backgroundColor:'#1d4ed8',borderRadius:10}]
+  });
+}
 function renderLegend(){ const st=['สูง','ปานกลาง','ต่ำ','ยังไม่เริ่ม']; legend.innerHTML=st.map(s=>`<button class="pill ${statusFilter.value===s?'active':''}" data-s="${s}"><span style="background:${COLORS[s]}"></span>${s}</button>`).join(''); legend.querySelectorAll('.pill').forEach(b=>b.onclick=()=>{statusFilter.value=statusFilter.value===b.dataset.s?'':b.dataset.s;applyFilters();}); }
 
 function initMap(){
